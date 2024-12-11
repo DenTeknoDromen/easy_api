@@ -1,5 +1,7 @@
 const { insertDb, selectDb } = require('./db_handler')
+const { collectDefaultMetrics, register } = require ('prom-client')
 
+collectDefaultMetrics();
 const express = require('express')
 const app = express()
 const port = 3000
@@ -8,7 +10,7 @@ app.use(express.json());
 
 app.get('/cities/:id', async (req, res) => {
   const input = req.params.id
-  selectDb(input).then(output => res.send(output[0]))
+  selectDb(input).then(output => res.send(JSON.stringify(output[0])))
 })
 
 app.post('/cities', (req, res) => {
@@ -18,6 +20,16 @@ app.post('/cities', (req, res) => {
   insertDb(input)
   
 })
+
+app.get('/metrics', async (_req, res) => {
+  try {
+    res.set('Content-Type', register.contentType);
+    res.end(await register.metrics());
+  } catch (err) {
+    res.status(500).end(err);
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
