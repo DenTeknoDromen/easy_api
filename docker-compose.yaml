@@ -1,7 +1,9 @@
 version: '3.8'
 services:
   prometheus:
-    image: prom/prometheus:latest
+    build:
+      context: .
+      dockerfile: Dockerfile_prometheus
     container_name: prometheus
     ports:
       - "9090:9090"
@@ -12,3 +14,10 @@ services:
     container_name: grafana
     ports:
       - "3000:3000"
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile_api
+    container_name: api
+    ports:
+      - 4000:4000
