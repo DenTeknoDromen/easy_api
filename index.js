@@ -1,12 +1,13 @@
 const { insertDb, selectDb } = require('./db_handler')
-const { collectDefaultMetrics, register } = require ('prom-client')
+const apiMetrics = require('prometheus-api-metrics');
 
-collectDefaultMetrics();
+
 const express = require('express')
 const app = express()
 const port = 4000
 
 app.use(express.json());
+app.use(apiMetrics());
 
 app.get('/cities/:id', async (req, res) => {
   const input = req.params.id
