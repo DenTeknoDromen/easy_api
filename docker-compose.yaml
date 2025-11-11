@@ -1,12 +1,22 @@
-version: '3.8'
 services:
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    ports:
-      - "9090:9090"
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: prometheus
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
+  liquibase:
+    container_name: liquibase
+    build:
+      context: .
+      dockerfile: Dockerfile_liquibase
+    image: liquibase_spanner
+    environment:
+      JDBC_URL: jdbc:sqlite:cities.db
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./liquibase/:/liquibase/changelog
+
   # grafana:
   #   image: grafana/grafana:latest
   #   container_name: grafana
