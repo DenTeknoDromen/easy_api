@@ -1,6 +1,3 @@
 node_modules/
-input
-function_test.js
-input
-test.js
-sum*
+test*
+build-date

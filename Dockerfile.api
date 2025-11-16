@@ -6,6 +6,8 @@ COPY . $WORKDIR
 
 RUN npm install
 
-CMD [npm, start] 
+RUN echo $(date +%Y-%m-%d-%H:%M) > build_date
+
+CMD ["npm", "start"] 
 
 EXPOSE 4000

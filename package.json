@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "start": "set DEBUG=express:* & nodemon index.js"
+    "start": "set DEBUG=express:* & nodemon index.js",
+    "run": "node index.js"
   },
   "author": "",
   "license": "ISC",

@@ -1,11 +1,12 @@
-const promBundle = require('express-prom-bundle');
-const { selectDb } = require('./mariadb_handler');
-const metricsMiddleware = promBundle({includeMethod: true});
-
-
 const express = require('express')
+const promBundle = require('express-prom-bundle');
+const { selectDb, insertDb } = require('./mariadb_handler');
+const { setBuildDate } = require("./set-build-date")
+
+const metricsMiddleware = promBundle({includeMethod: true});
 const app = express()
 const port = 4000
+setBuildDate()
 
 app.use(express.json());
 app.use(metricsMiddleware)
@@ -18,16 +19,15 @@ app.get('/cities/:id', async (req, res) => {
 
 
 app.get('/image', async (req, res) => {
-    res.send({thisis: "banan"})
-    //res.send({thisis: process.env.IMAGE_DATE})
+    res.send({build_date: process.env.BUILD_DATE})
 })
-
 
 app.post('/cities', (req, res) => {
   const input = req.body;
-  res.json(input)
-  console.log(input)
   insertDb(input)
+  // res.json(input)
+  // console.log(input)
+  // insertDb(input)
 })
 
 
