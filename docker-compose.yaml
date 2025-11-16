@@ -1,31 +1,61 @@
 services:
-  # prometheus:
-  #   image: prom/prometheus:latest
-  #   container_name: prometheus
-  #   ports:
-  #     - "9090:9090"
-  #   volumes:
-  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
+  database:
+    container_name: mariaDB
+    hostname: ${DB_HOST_NAME}
+    image: mariadb
+    ports: 
+      - ${DB_PORT}:${DB_PORT}
+    environment:
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+    networks:
+      - mariaDB_network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
   liquibase:
     container_name: liquibase
     build:
       context: .
-      dockerfile: Dockerfile_liquibase
-    image: liquibase_spanner
-    environment:
-      JDBC_URL: jdbc:sqlite:cities.db
+      dockerfile: Dockerfile.liquibase
+    # image: liquibase
     volumes:
-      - ./liquibase/:/liquibase/changelog
+      - ./liquibase/:/liquibase/changelog    
+    environment:
+      - JDBC_URL=jdbc:mariadb://${DB_HOST_NAME}:${DB_PORT}/${MARIADB_DATABASE}
+      - USER=root
+      - PASSWORD=${MARIADB_ROOT_PASSWORD}
+    networks:
+      - mariaDB_network      
+    depends_on:
+      database:
+        condition: service_healthy
 
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   container_name: grafana
-  #   ports:
-  #     - "3000:3000"
-  # api:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile_api
-  #   container_name: api
-  #   ports:
-  #     - 4000:4000
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api
+    ports: 
+      - ${API_PORT}:${API_PORT}
+    environment:
+      - IMAGE_DATE="banan"
+      - DB_URL=${DB_URL}
+      - DB_PORT=${DB_PORT}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+    networks:
+      - mariaDB_network      
+    depends_on:
+      liquibase:
+        condition: service_completed_successfully
+    
+networks:
+  mariaDB_network:
+    driver: bridge

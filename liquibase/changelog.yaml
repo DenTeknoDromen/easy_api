@@ -1,20 +1,20 @@
 databaseChangeLog:
   - changeSet:
-      id: create-table-lint-build
-      author: Tobbe
-      comment: Create a database for SQLite
+      id: 1
+      author: me
+      comment: Creates a basic table for a mysql database
       changes:
         - createTable:
             tableName: cities
             columns:
               - column:
                   name: country
-                  type: STRING(50)
+                  type: VARCHAR(50)
                   constraints:
                     nullable: false
               - column:
                   name: city
-                  type: STRING(40)
+                  type: VARCHAR(40)
                   constraints:
                     nullable: false
               - column:

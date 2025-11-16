@@ -1,10 +1,10 @@
 FROM liquibase/liquibase:4.30-alpine
 
-
-
 ENTRYPOINT docker-entrypoint.sh \
-      --changelogFile=/liquibase/changelog/changelog.yaml \
+      --changelogFile=changelog/changelog.yaml \
       --log-level=INFO \
       --show-banner=false \
       --url="$JDBC_URL" \
+      --username="$USER" \
+      --password="$PASSWORD" \
       update

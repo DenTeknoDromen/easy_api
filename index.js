@@ -1,5 +1,5 @@
 const promBundle = require('express-prom-bundle');
-const { insertDb, selectDb } = require('./db_handler');
+const { selectDb } = require('./mariadb_handler');
 const metricsMiddleware = promBundle({includeMethod: true});
 
 
@@ -17,12 +17,17 @@ app.get('/cities/:id', async (req, res) => {
 })
 
 
+app.get('/image', async (req, res) => {
+    res.send({thisis: "banan"})
+    //res.send({thisis: process.env.IMAGE_DATE})
+})
+
+
 app.post('/cities', (req, res) => {
   const input = req.body;
   res.json(input)
   console.log(input)
   insertDb(input)
-  
 })
 
 
